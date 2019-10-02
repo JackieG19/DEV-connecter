@@ -36,6 +36,39 @@ public class Die
 	}
 }
 
+public class Marker
+{
+ 	public int position;
+ 	public string name;
+
+
+ 	public Marker(string name)
+ 	{
+ 		this.position = -1;
+ 		this.name = name;
+ 	}
+
+ 	public virtual void Move(int spaces) {
+ 		this.position += spaces;
+ 	}
+ }
+
+public class FLMarker : Marker
+{
+ 	public bool stopped;
+ 	public FLMarker(string name) : base(name)
+ 	{
+ 		this.stopped = false;	
+ 	}
+
+ 	public void Move(int spaces, int stopValue)
+ 	{
+ 		// preprocessing
+ 		this.Move(spaces);
+ 		// postprocess
+ 	}
+ }
+
 public class Card
 {
 	public string suits;
