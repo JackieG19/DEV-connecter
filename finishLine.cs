@@ -76,6 +76,37 @@ public class Card
 
  	}
 
+public class Deck
+{
+ 	public List<Card> cards = new List<Card>();
+
+ 	public Deck(int[] suits, int[] values, int numJokers)
+ 	{
+ 		foreach(var suit in suits)	
+ 		{
+ 			foreach(var val in values)
+ 			{
+ 				this.cards.Add(new Card(val, suit));
+ 			}
+ 		}
+ 		for (int jkr = 0; jkr < numJokers; jkr++)
+ 		{
+ 			this.cards.Add(new Card(0, 0));
+ 		}
+ 	}
+
+ 	public void Shuffle(Random rand)
+ 	{
+ 		for (int index = this.cards.Count - 1; index > 0; index--) 
+ 		{
+ 			int position = rand.Next(index + 1);
+ 			Card temp = this.cards[index];
+ 			this.cards[index] = this.cards[position];
+ 			this.cards[position] = temp;
+ 		}
+ 	}
+}
+	
 
 public class Marker
 {
@@ -110,21 +141,18 @@ public class FLMarker : Marker
  	}
  }
 
-public class Card
-{
-	public string suits;
-	public int val;
-	private dict<int, string>;
-}
 
 public class Program
 {
 	public static void Main()
 	{
-		var redDie = new Die(6, true);
-		Die blackDie = new Die();
-		var bigDie = new Die(100, true)
-		var rand = new Random();
-		Console.WriteLine("Hello World");
+		Die redDie = new Die(6, 0xFF0000);
+ 		var blackDie = new Die(6, 0x000000);
+ 		var rand = new Random();
+ 		var deck = new Deck(suits, values, 2);
+ 		Console.WriteLine(deck.cards.Count);
+ 		Console.WriteLine(deck.cards[23].Display());
+ 		deck.Shuffle(rand);
+ 		Console.WriteLine(deck.cards[23].Display());
 	}
 }
