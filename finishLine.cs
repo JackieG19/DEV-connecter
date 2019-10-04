@@ -140,6 +140,21 @@ public class FLMarker : Marker
  		// postprocess
  	}
  }
+	
+public class Player
+{
+ 	public Marker[] markers;
+ 	public string name;
+
+ 	public Player(string name, string[] markerNames){
+ 		this.markers = new Marker[markerNames.Length];
+ 		this.name = name;
+ 		for (int markerName = 0; markerName < markerNames.Length; markerName++)
+ 		{
+ 			this.markers[markerName] = new Marker(markerNames[markerName]);
+ 		}
+ 	}
+ }
 
 
 public class Program
