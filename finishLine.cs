@@ -156,6 +156,19 @@ public class Player
  	}
  }
 
+public class FinishLine
+ {
+ 	private readonly int[] SUITS = new int[] {0, 1, 2, 3};
+ 	private readonly int[] VALUES = new int[] {1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13};
+
+ 	public Deck deck;
+ 	public Die redDie;
+ 	public Die blackDie;
+ 	public Player player1;
+ 	public int players;
+ 	public Random Rand;
+
+ }
 
 public class Program
 {
