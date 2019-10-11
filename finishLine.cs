@@ -2,185 +2,286 @@ using System;
 using System.Collections.Generic;
 
 // possible object:
-// deck of cards
-// cards
-// die
-// player
+// deck of cards*
+// cards*
+// die*
+// player*
 // board or game class
-// marker
+// marker*
+// FLmarker*
 
-public class Die
-{
-	public bool isRed;
-	public int val;
-	public int sides;
-	public Random rand;
-	
-	public Die(int sides, bool isRed)
-	{
-		this.sides = sides;
-		this.isRed = isRed;
-		this.val = 1;
-	}
-	
-	public Die(bool isRed)
-	{
-		this.sides = 6;
-		this.isRed = isRed;
-		this.val = 1;
-	}
-	
-	public void Roll(Random rand)
-	{
-		this.val = rand.Next(1, this.sides + 1);
-	}
-}
+
+ public class Die
+ {
+   public bool isRed;
+   public int val;
+   public int sides;
+
+   public Die(int sides, bool isRed)
+   {
+     this.sides = sides;
+     this.isRed = isRed;
+     this.val = 1;
+   }
+
+   public Die()
+   {
+     this.sides = 6;
+     this.val = 1;
+   }
+
+   public void Roll(Random rand)
+   {
+     this.val = rand.Next(1, this.sides + 1);
+   }
+ }
 
 public class Card
-{
- 	public int suit;
- 	public int val;
- 	private Dictionary<int, string> SUIT_MAP = new Dictionary<int, string> {
- 		{0, "\u2663"},
- 		{1, "\u2660"},
- 		{2, "\u2665"},
- 		{3, "\u2666"}
- 	};
- 	private Dictionary<int, string> VAL_MAP = new Dictionary<int, string> {
- 		{1, "Ac"},
- 		{10, "10"},
- 		{11, "Ja"},
- 		{12, "Qu"},
- 		{13, "Ki"}
- 	};
+ {
+   public string suit;
+   public int val;
+   private readonly Dictionary<int, string> FACE_MAP = new Dictionary<int, string>() {
+     {1, "Ac"},
+     {10, "10"},
+     {11, "Ja"},
+     {12, "Qu"},
+     {13, "Ki"}
+   };
 
- 	public Card(int val, int suit)
- 	{
- 		this.val = val;
- 		this.suit = suit;
- 	}
+ public Card(string suit, int val)
+  {
+     this.suit = suit;
+     this.val = val;
+   }
 
- 	public string Display()
- 	{
- 		if (this.val == 0)
- 		{
- 			return "Jkr";
- 		}
+   public string Display()
+   {
+     if (this.val == 0)
+     {
+       return "Jkr";
+     }
 
- 		if (this.VAL_MAP.ContainsKey(this.val))
- 		{
- 			return this.SUIT_MAP[this.suit] + this.VAL_MAP[this.val];
- 		}
-
- 		return this.SUIT_MAP[this.suit] + "0" + this.val;
-
- 	}
+     if (FACE_MAP.ContainsKey(this.val))
+     {
+       return this.suit + this.FACE_MAP[this.val];
+     }
+     return this.suit + "0" + this.val;
+   }
+ }
 
 public class Deck
-{
- 	public List<Card> cards = new List<Card>();
+ {
+   public List<Card> cards = new List<Card>();
 
- 	public Deck(int[] suits, int[] values, int numJokers)
- 	{
- 		foreach(var suit in suits)	
- 		{
- 			foreach(var val in values)
- 			{
- 				this.cards.Add(new Card(val, suit));
- 			}
- 		}
- 		for (int jkr = 0; jkr < numJokers; jkr++)
- 		{
- 			this.cards.Add(new Card(0, 0));
- 		}
- 	}
+   public Deck(string[] suits, int[] values, int numOfJkrs)
+   {
+     foreach (var suit in suits)
+     {
+       foreach (var val in values)
+       {
+         this.cards.Add(new Card(suit, val));
+       }
+     }
+     for (int jkr = 0; jkr < numOfJkrs; jkr++)
+     {
+       this.cards.Add(new Card("", 0));
+     }
+   }
 
- 	public void Shuffle(Random rand)
- 	{
- 		for (int index = this.cards.Count - 1; index > 0; index--) 
- 		{
- 			int position = rand.Next(index + 1);
- 			Card temp = this.cards[index];
- 			this.cards[index] = this.cards[position];
- 			this.cards[position] = temp;
- 		}
- 	}
-}
-	
+   public void Shuffle(Random rand)
+   {
+     for (int index = this.cards.Count - 1; index > 0; index--)
+     {
+       int position = rand.Next(index + 1);
+       //(this.cards[position], this.cards[index]) = (this.cards[index], this.cards[position]);
+       Card temp = this.cards[index];
+       this.cards[index] = this.cards[position];
+       this.cards[position] = temp;
+     }
+   }
+ }
 
 public class Marker
-{
- 	public int position;
- 	public string name;
+ {
+   public int position;
+   public string name;
 
+   public Marker(string name)
+   {
+     this.position = -1;
+     this.name = name;
+   }
 
- 	public Marker(string name)
- 	{
- 		this.position = -1;
- 		this.name = name;
- 	}
-
- 	public virtual void Move(int spaces) {
- 		this.position += spaces;
- 	}
+   public void Move(int spaces)
+   {
+     this.position += spaces;
+   }
  }
 
 public class FLMarker : Marker
-{
- 	public bool stopped;
- 	public FLMarker(string name) : base(name)
- 	{
- 		this.stopped = false;	
- 	}
+ {
+   public bool stopped;
+   public FLMarker(string name) : base(name)
+   {
+     return;
+   }
 
- 	public void Move(int spaces, int stopValue)
- 	{
- 		// preprocessing
- 		this.Move(spaces);
- 		// postprocess
- 	}
+   public void Move(int spaces, int stopValue, Deck gameDeck)
+   {
+     // add in Finish line logic
+     for (int counter = 1; counter <= spaces; counter++)
+     {
+       if (gameDeck.cards[this.position + counter].val >= stopValue)
+       {
+         base.Move(counter);
+         return;
+       }
+     }
+     base.Move(spaces);
+   }
  }
-	
+ 
 public class Player
-{
- 	public Marker[] markers;
- 	public string name;
+ {
+   public string name;
+   public FLMarker[] markers;
 
- 	public Player(string name, string[] markerNames){
- 		this.markers = new Marker[markerNames.Length];
- 		this.name = name;
- 		for (int markerName = 0; markerName < markerNames.Length; markerName++)
- 		{
- 			this.markers[markerName] = new Marker(markerNames[markerName]);
- 		}
- 	}
+   public Player(string name, string[] markers)
+   {
+     this.name = name;
+     this.markers = new FLMarker[markers.Length];
+     for (int markerName = 0; markerName < markers.Length; markerName++)
+     {
+       this.markers[markerName] = new FLMarker(markers[markerName]);
+     }
+   }
+
+   public string hasMarkersAt(int position)
+   {
+     string master = "";
+     foreach (var marker in this.markers)
+     {
+       if (marker.position == position)
+       {
+         master += marker.name;
+       }
+       else
+       {
+         master += " ";
+       }
+     }
+     return master;
+   }
  }
 
 public class FinishLine
  {
- 	private readonly int[] SUITS = new int[] {0, 1, 2, 3};
- 	private readonly int[] VALUES = new int[] {1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13};
+  private readonly List<int> RESTRICTED_VALUES = new List<int> { 0, 1, 2, 11, 12, 13 };
+   private readonly int[] RESTRICED_POSITIONS = new int[] { 0, 1, 2, 51, 52, 53 };
+   private const int NUM_JOKERS = 2;
+   private readonly string[] SUITS = new string[] { "\u2663", "\u2660", "\u2665", "\u2666" };
+   private readonly int[] VALUES = new int[] { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13 };
+   private readonly string[] MARKER_NAMES = new string[] { "A", "B", "C" };
 
- 	public Deck deck;
- 	public Die redDie;
- 	public Die blackDie;
- 	public Player player1;
- 	public int players;
- 	public Random Rand;
+   public int players;
+   public Die redDie;
+   public Die blackDie;
+   public Deck deck;
+   public Player player1;
+   private Random rand = new Random();
 
+   public FinishLine(int players, string player1Name)
+   {
+     this.players = players;
+     this.player1 = new Player(player1Name, this.MARKER_NAMES);
+     this.redDie = new Die(6, true);
+     this.blackDie = new Die(6, false);
+     this.deck = new Deck(this.SUITS, this.VALUES, NUM_JOKERS);
+     this.rand = new Random();
+     this.deck.Shuffle(this.rand);
+     ValidateDeck();
+     this.redDie.Roll(this.rand);
+     this.blackDie.Roll(this.rand);
+   }
+
+   public void DisplayBoard()
+   {
+     string master = "";
+     string cardRow = "\t";
+     string playerRow = "\t";
+     // how do I want to display??
+     // \tPlayer1\tplayer2...
+     // \tABC\t{\t}ABC
+     // \t[SVV]\t[SVV]\t[SVV]
+     // \tM_M_M\t_MMM_\t_MMM_
+     cardRow += "Player1";
+     playerRow += this.player1.hasMarkersAt(-1) + "\t";
+     master += cardRow + "\n" + playerRow + "\n\n";
+     cardRow = "\t";
+     playerRow = "\t";
+
+     int counter = 0;
+     foreach (Card card in this.deck.cards)
+     {
+       Console.Clear();
+       cardRow += "[" + card.Display() + "]";
+       playerRow += " " + this.player1.hasMarkersAt(counter) + " ";
+       counter++;
+       if (counter % 9 == 0)
+       {
+         master += cardRow + "\n" + playerRow + "\n\n";
+         cardRow = "\t";
+         playerRow = "\t";
+       }
+       else
+       {
+         cardRow += "\t";
+         playerRow += "\t";
+       }
+     }
+     Console.WriteLine(master);
+   }
+
+   public void ValidateCard(int position)
+   {
+     if (RESTRICTED_VALUES.Contains(this.deck.cards[position].val))
+     {
+       // swap the card
+       while (true)
+       {
+         //3-50
+         int newPosition = this.rand.Next(3, 51);
+         if (RESTRICTED_VALUES.Contains(this.deck.cards[newPosition].val))
+         {
+           continue;
+         }
+         Card temp = this.deck.cards[position];
+         this.deck.cards[position] = this.deck.cards[newPosition];
+         this.deck.cards[newPosition] = temp;
+         break;
+       }
+     }
+   }
+
+   public void ValidateDeck()
+   {
+     // check first and last 3 cards for restricted values. swap with a valid card from the center.
+     int[] positions = new int[] { 0, 1, 2, 51, 52, 53 };
+     foreach (int position in positions)
+     {
+       ValidateCard(position);
+     }
+   }
  }
 
 public class Program
-{
-	public static void Main()
-	{
-		Die redDie = new Die(6, 0xFF0000);
- 		var blackDie = new Die(6, 0x000000);
- 		var rand = new Random();
- 		var deck = new Deck(suits, values, 2);
- 		Console.WriteLine(deck.cards.Count);
- 		Console.WriteLine(deck.cards[23].Display());
- 		deck.Shuffle(rand);
- 		Console.WriteLine(deck.cards[23].Display());
-	}
+ {
+   public static void Main()
+   {
+     FinishLine game = new FinishLine(1, "Player 1");
+     game.DisplayBoard();
+     game.player1.markers[0].Move(5, 10, game.deck);
+     game.DisplayBoard();
+   }
+ }
 }
